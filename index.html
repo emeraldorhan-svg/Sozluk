@@ -1,0 +1,399 @@
+<title>Deniz Canlıları Sözlüğü</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;800&family=Nunito:wght@500;700;800&display=swap">
+<style>
+/* Layout: tek sütun, büyük dokunma alanları. Üstte başlık ve iki sekme (Keşfet, Oyun), altında canlı kartları. */
+:root {
+  --bg: #eaf6fb; --surface: #ffffff; --ink: #17324a; --muted: #47657c; --line: #cfe6f0;
+  --accent: #1f4e79; --on-accent: #ffffff; --teal: #1b7468;
+  --good: #1f8a4c; --good-bg: #def4e5; --try: #b4560f; --try-bg: #fdebd8;
+  --star: #f2a900; --star-off: #c5d8e3; --shade: rgba(12, 32, 45, .55);
+  --font-head: 'Baloo 2', 'Nunito', system-ui, sans-serif;
+  --font-body: 'Nunito', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0c202d; --surface: #143347; --ink: #e9f5fb; --muted: #a9c4d6; --line: #26506b;
+    --accent: #8fd0f4; --on-accent: #0c202d; --teal: #6fd9c9;
+    --good: #6fdc9a; --good-bg: #17402c; --try: #f5b36b; --try-bg: #4a2f14;
+    --star: #ffc933; --star-off: #35566b; --shade: rgba(0, 0, 0, .7);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0c202d; --surface: #143347; --ink: #e9f5fb; --muted: #a9c4d6; --line: #26506b;
+  --accent: #8fd0f4; --on-accent: #0c202d; --teal: #6fd9c9;
+  --good: #6fdc9a; --good-bg: #17402c; --try: #f5b36b; --try-bg: #4a2f14;
+  --star: #ffc933; --star-off: #35566b; --shade: rgba(0, 0, 0, .7);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink); font: 500 17px/1.5 var(--font-body);
+  padding-block: 20px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+.wrap { max-width: 980px; margin: 0 auto; }
+button { font: inherit; color: inherit; cursor: pointer; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+
+h1 { font: 800 clamp(32px, 8.5vw, 52px)/1.02 var(--font-head); color: var(--accent); margin: 0; text-wrap: balance; }
+.sub { margin: 8px 0 0; color: var(--muted); font-size: 18px; }
+
+.tabs { display: flex; gap: 10px; margin: 20px 0 14px; }
+.tab {
+  flex: 1; min-height: 58px; border-radius: 18px; border: 3px solid var(--accent);
+  background: transparent; color: var(--accent); font: 800 20px var(--font-head);
+}
+.tab[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
+
+.letters { display: flex; gap: 8px; overflow-x: auto; padding: 4px 2px 12px; scrollbar-width: thin; }
+.chip {
+  flex: 0 0 auto; min-width: 48px; height: 48px; border-radius: 50%; border: 2px solid var(--line);
+  background: var(--surface); color: var(--accent); font: 800 20px var(--font-head);
+}
+
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(156px, 1fr)); gap: 12px; }
+.card {
+  display: flex; flex-direction: column; gap: 8px; padding: 8px 8px 12px; text-align: center;
+  background: var(--surface); border: 2px solid var(--line); border-radius: 22px;
+  transition: transform .15s ease, border-color .15s ease;
+}
+.card:hover { border-color: var(--accent); transform: translateY(-2px); }
+.card.flash { border-color: var(--accent); box-shadow: 0 0 0 4px var(--accent); }
+.nm { font: 800 18px/1.15 var(--font-head); padding: 0 4px; text-wrap: balance; }
+.art { position: relative; display: block; border-radius: 16px; overflow: hidden; }
+.art svg { display: block; width: 100%; height: auto; }
+.badge {
+  position: absolute; top: 6px; left: 6px; width: 28px; height: 28px; border-radius: 50%;
+  background: #1f4e79; color: #fff; font: 800 15px/28px var(--font-head); text-align: center;
+}
+
+.mover { transform-box: fill-box; transform-origin: 50% 55%; animation-delay: var(--d, 0s); }
+.m-bob { animation: bob 3.2s ease-in-out infinite; }
+.m-swim { animation: swim 3.8s ease-in-out infinite; }
+.m-wiggle { animation: wiggle 2.6s ease-in-out infinite; }
+.m-pulse { animation: pulse 2.8s ease-in-out infinite; }
+.m-hop { animation: hop 2.2s ease-in-out infinite; }
+@keyframes bob { 50% { transform: translateY(-7px); } }
+@keyframes swim { 0%, 100% { transform: translateX(-6px) rotate(-2deg); } 50% { transform: translateX(6px) rotate(2deg); } }
+@keyframes wiggle { 0%, 100% { transform: rotate(-4deg); } 50% { transform: rotate(4deg); } }
+@keyframes pulse { 50% { transform: scale(1.07); } }
+@keyframes hop { 0%, 100% { transform: translateY(0); } 15% { transform: translateY(-8px); } 30% { transform: translateY(0); } 65% { transform: translateX(5px); } 85% { transform: translateX(-5px); } }
+.boing { animation: boing .6s ease; }
+@keyframes boing { 0% { transform: scale(1); } 30% { transform: scale(1.12, .9); } 55% { transform: scale(.94, 1.08); } 100% { transform: scale(1); } }
+@keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 10px; min-height: 58px; padding: 0 24px;
+  border-radius: 29px; border: 3px solid var(--accent); background: var(--accent); color: var(--on-accent);
+  font: 800 20px var(--font-head);
+}
+.btn.ghost { background: transparent; color: var(--accent); }
+.btn svg { width: 24px; height: 24px; flex: none; }
+.vnote { margin: 10px 0 0; font-size: 15px; color: var(--muted); }
+
+dialog {
+  border: 0; padding: 0; border-radius: 28px; background: var(--surface); color: var(--ink);
+  width: calc(100% - 24px); max-width: 520px; max-height: calc(100dvh - 24px); overflow: auto;
+}
+dialog::backdrop { background: var(--shade); }
+.d-in { padding: 14px 16px 20px; }
+.d-top { display: flex; justify-content: flex-end; }
+.icon-btn {
+  width: 52px; height: 52px; border-radius: 50%; border: 2px solid var(--line); background: transparent;
+  color: var(--ink); display: grid; place-items: center;
+}
+.icon-btn svg { width: 26px; height: 26px; }
+.d-art { max-width: 380px; margin: 0 auto; cursor: pointer; border-radius: 20px; overflow: hidden; }
+.d-art svg { display: block; width: 100%; height: auto; }
+.d-tip { text-align: center; margin: 6px 0 0; font-size: 15px; color: var(--muted); }
+#d-name { font: 800 clamp(28px, 7vw, 36px)/1.1 var(--font-head); margin: 14px 0 0; color: var(--accent); text-wrap: balance; }
+#d-latin { margin: 4px 0 0; font-style: italic; color: var(--teal); font-size: 17px; }
+#d-desc { margin: 12px 0 0; font-size: 20px; line-height: 1.5; }
+.d-actions { margin-top: 16px; }
+.d-nav { display: flex; gap: 10px; margin-top: 18px; }
+.d-nav .btn { flex: 1; padding: 0 12px; font-size: 18px; }
+
+.panel { background: var(--surface); border: 2px solid var(--line); border-radius: 26px; padding: 18px 16px 22px; }
+.g-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.g-count { font: 800 18px var(--font-head); color: var(--muted); }
+.stars { display: flex; gap: 3px; }
+.stars svg { width: 22px; height: 22px; fill: var(--star-off); }
+.stars svg.on { fill: var(--star); }
+.g-q { font: 800 clamp(26px, 6.5vw, 36px)/1.15 var(--font-head); margin: 16px 0 12px; text-wrap: balance; }
+.g-q mark { background: none; color: var(--accent); }
+.opts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 16px; }
+.opt { padding: 5px; border-radius: 20px; border: 4px solid var(--line); background: var(--surface); }
+.opt .art { border-radius: 13px; }
+.opt.right { border-color: var(--good); background: var(--good-bg); }
+.opt.wrong { border-color: var(--try); animation: shake .35s ease; }
+.opt:disabled { cursor: default; }
+.opt:disabled:not(.right) { opacity: .5; }
+.fb { margin-top: 16px; padding: 14px 16px; border-radius: 18px; font-size: 18px; line-height: 1.45; }
+.fb strong { font: 800 22px var(--font-head); display: block; }
+.fb.good { background: var(--good-bg); color: var(--ink); border: 2px solid var(--good); }
+.fb.try { background: var(--try-bg); color: var(--ink); border: 2px solid var(--try); }
+.g-next { margin-top: 16px; }
+.big-stars .stars svg { width: 34px; height: 34px; }
+.g-end h2 { font: 800 clamp(28px, 7vw, 38px)/1.1 var(--font-head); color: var(--accent); margin: 14px 0 6px; }
+.g-end p { font-size: 19px; margin: 0 0 18px; }
+.g-row { display: flex; gap: 10px; flex-wrap: wrap; }
+.g-intro h2 { font: 800 clamp(28px, 7vw, 38px)/1.1 var(--font-head); color: var(--accent); margin: 0 0 8px; }
+.g-intro p { font-size: 19px; margin: 0 0 18px; }
+.foot { margin-top: 26px; text-align: center; color: var(--muted); font-size: 15px; }
+.no-tts .listen { display: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mover, .boing, .opt.wrong { animation: none !important; }
+  .card { transition: none; }
+}
+</style>
+
+<div class="wrap">
+  <h1>Deniz Canlıları Sözlüğü</h1>
+  <p class="sub">Bir canlıya dokun, tanış ve dinle.</p>
+
+  <div class="tabs">
+    <button class="tab" id="tab-explore" aria-pressed="true">Keşfet</button>
+    <button class="tab" id="tab-game" aria-pressed="false">Oyun</button>
+  </div>
+
+  <section id="explore" aria-label="Deniz canlıları">
+    <div class="letters" id="letters" aria-label="Harfler"></div>
+    <div class="grid" id="grid"></div>
+  </section>
+
+  <section id="game" aria-label="Oyun" hidden>
+    <div class="panel" id="game-body"></div>
+  </section>
+
+  <p class="foot">26 deniz canlısı</p>
+</div>
+
+<dialog id="detail" aria-labelledby="d-name">
+  <div class="d-in">
+    <div class="d-top"><button class="icon-btn" id="d-close" aria-label="Kapat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button></div>
+    <div class="d-art" id="d-art" role="img"></div>
+    <p class="d-tip">Canlıya dokun, zıplasın!</p>
+    <h2 id="d-name"></h2>
+    <p id="d-latin"></p>
+    <p id="d-desc"></p>
+    <div class="d-actions">
+      <button class="btn listen" id="d-listen"></button>
+      <p class="vnote" hidden>Bu cihazda Türkçe ses bulunamadı. Okuma sesi doğru çıkmayabilir.</p>
+    </div>
+    <div class="d-nav">
+      <button class="btn ghost" id="d-prev" aria-label="Önceki canlı"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>Önceki</button>
+      <button class="btn ghost" id="d-next" aria-label="Sonraki canlı">Sonraki<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg></button>
+    </div>
+  </div>
+</dialog>
+
+<script>
+const C = [{"slug": "apolet-kopekbaligi", "name": "Apolet köpekbalığı", "latin": "Hemiscyllium ocellatum", "desc": "Yüzgeçlerini ayak gibi kullanarak resif zemininde yürüyebilen küçük bir köpekbalığıdır.", "letter": "A", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#d9f0fa\"/><g class=\"mover m-swim\">\n<path d=\"M46 8L78 -12L70 8L78 28Z\" fill=\"#d4a373\"/><path d=\"M-5 -16L8 -42L22 -16Z\" fill=\"#c08a57\"/>\n<ellipse cx=\"0\" cy=\"8\" rx=\"54\" ry=\"28\" fill=\"#d4a373\"/><ellipse cx=\"-4\" cy=\"21\" rx=\"40\" ry=\"10\" fill=\"#f3dcc0\"/>\n<circle cx=\"18\" cy=\"-2\" r=\"8\" fill=\"#5b3a1e\"/><circle cx=\"18\" cy=\"-2\" r=\"3.5\" fill=\"#fff\"/>\n<circle cx=\"34\" cy=\"10\" r=\"3\" fill=\"#a9733f\"/><circle cx=\"2\" cy=\"12\" r=\"3\" fill=\"#a9733f\"/>\n<g transform=\"translate(-26,2) scale(.8)\"><circle cx=\"-11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"-9.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><circle cx=\"12.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><path d=\"M-6 8Q0 14 6 8\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"-19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/g><\/svg>"}, {"slug": "civik-balik", "name": "Cıvık balık", "latin": "Myxini", "desc": "Tehlikede kalınca çok miktarda yapışkan balçık salgılayarak kendini korur.", "letter": "C", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#e3f5e6\"/><g class=\"mover m-wiggle\">\n<circle cx=\"45\" cy=\"-34\" r=\"9\" fill=\"#b9e6a8\"/><circle cx=\"62\" cy=\"-14\" r=\"5\" fill=\"#b9e6a8\"/>\n<circle cx=\"-34\" cy=\"-44\" r=\"6\" fill=\"#b9e6a8\"/><circle cx=\"25\" cy=\"-52\" r=\"4\" fill=\"#b9e6a8\"/>\n<path d=\"M-52 22Q-25 -22 5 8T58 -8\" fill=\"none\" stroke=\"#f4a6b8\" stroke-width=\"24\" stroke-linecap=\"round\"/>\n<circle cx=\"-52\" cy=\"22\" r=\"17\" fill=\"#f4a6b8\"/>\n<g transform=\"translate(-52,22) scale(.62)\"><circle cx=\"-11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"-9.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><circle cx=\"12.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><path d=\"M-6 8Q0 14 6 8\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"-19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/g><\/svg>"}, {"slug": "ciplak-solungacli-deniz-sumuklusu", "name": "Çıplak solungaçlı deniz sümüklüsü", "latin": "Nudibranchia", "desc": "Parlak renkleriyle ünlü, kabuksuz bir yumuşakçadır. Sırtındaki renkli çıkıntılarla nefes alır.", "letter": "Ç", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#fdeee0\"/><g class=\"mover m-pulse\">\n<path d=\"M-38 0L-48 -32M-24 -4L-26 -36\" stroke=\"#ff9f43\" stroke-width=\"5\" stroke-linecap=\"round\" fill=\"none\"/>\n<circle cx=\"-48\" cy=\"-33\" r=\"5.5\" fill=\"#ff9f43\"/><circle cx=\"-26\" cy=\"-37\" r=\"5.5\" fill=\"#ff9f43\"/>\n<ellipse cx=\"0\" cy=\"34\" rx=\"62\" ry=\"7\" fill=\"#c9b8ff\"/><ellipse cx=\"0\" cy=\"14\" rx=\"56\" ry=\"24\" fill=\"#a58cf5\"/>\n<circle cx=\"-14\" cy=\"-8\" r=\"7\" fill=\"#ff9f43\"/><circle cx=\"2\" cy=\"-12\" r=\"7\" fill=\"#ff9f43\"/>\n<circle cx=\"18\" cy=\"-10\" r=\"7\" fill=\"#ff9f43\"/><circle cx=\"34\" cy=\"-3\" r=\"7\" fill=\"#ff9f43\"/>\n<g transform=\"translate(-8,20) scale(.8)\"><circle cx=\"-11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"-9.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><circle cx=\"12.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><path d=\"M-6 8Q0 14 6 8\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"-19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/g><\/svg>"}, {"slug": "dev-izopod", "name": "Dev izopod", "latin": "Bathynomus giganteus", "desc": "Karada gördüğümüz yer bitlerinin akrabasıdır. Derin denizde yaşar ve 40 cm'ye kadar uzayabilir.", "letter": "D", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#ece6fb\"/><g class=\"mover m-hop\">\n<path d=\"M-62 -4Q-76 -20 -86 -18M-62 8Q-80 6 -88 14\" stroke=\"#8f8bb8\" stroke-width=\"3\" fill=\"none\" stroke-linecap=\"round\"/>\n<path d=\"M-30 32L-34 46M-12 34L-14 48M8 34L8 48M28 32L32 46\" stroke=\"#8f8bb8\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n<ellipse cx=\"0\" cy=\"5\" rx=\"60\" ry=\"32\" fill=\"#b8b5d6\"/>\n<path d=\"M-8 -26Q-4 5 -8 36M12 -28Q16 5 12 38M32 -22Q36 5 32 32M50 -12Q52 5 50 22\" stroke=\"#8f8bb8\" stroke-width=\"2.5\" fill=\"none\"/>\n<g transform=\"translate(-34,3) scale(.8)\"><circle cx=\"-11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"-9.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><circle cx=\"12.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><path d=\"M-6 8Q0 14 6 8\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"-19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/g><\/svg>"}, {"slug": "domuz-denizhiyari", "name": "Domuz denizhıyarı", "latin": "Scotoplanes", "desc": "Derin deniz tabanında minik tüp ayaklarıyla yavaşça gezinir.", "letter": "D", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#e3f5e6\"/><g class=\"mover m-hop\">\n<path d=\"M-26 -20Q-34 -42 -22 -48M26 -20Q34 -42 22 -48\" stroke=\"#f48fb1\" stroke-width=\"8\" stroke-linecap=\"round\" fill=\"none\"/>\n<path d=\"M-34 36L-36 50M-14 38L-14 52M14 38L14 52M34 36L36 50\" stroke=\"#f48fb1\" stroke-width=\"7\" stroke-linecap=\"round\"/>\n<ellipse cx=\"0\" cy=\"8\" rx=\"52\" ry=\"34\" fill=\"#f7b6c6\"/><ellipse cx=\"-12\" cy=\"-8\" rx=\"14\" ry=\"6\" fill=\"#fde0e8\"/>\n<g transform=\"translate(0,6) scale(1)\"><circle cx=\"-11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"-9.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><circle cx=\"12.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><path d=\"M-6 8Q0 14 6 8\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"-19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/g><\/svg>"}, {"slug": "dumbo-ahtapotu", "name": "Dumbo ahtapotu", "latin": "Grimpoteuthis", "desc": "Fil kulağına benzeyen yüzgeçlerini çırparak derin denizde süzülür.", "letter": "D", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#ece6fb\"/><g class=\"mover m-bob\">\n<ellipse cx=\"-44\" cy=\"-14\" rx=\"18\" ry=\"11\" fill=\"#ffc9a6\" transform=\"rotate(-25 -44 -14)\"/>\n<ellipse cx=\"44\" cy=\"-14\" rx=\"18\" ry=\"11\" fill=\"#ffc9a6\" transform=\"rotate(25 44 -14)\"/>\n<circle cx=\"-20\" cy=\"34\" r=\"9\" fill=\"#ffb48a\"/><circle cx=\"0\" cy=\"38\" r=\"9\" fill=\"#ffb48a\"/><circle cx=\"20\" cy=\"34\" r=\"9\" fill=\"#ffb48a\"/>\n<circle cx=\"0\" cy=\"-2\" r=\"38\" fill=\"#ffb48a\"/>\n<g transform=\"translate(0,0) scale(1.05)\"><circle cx=\"-11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"-9.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><circle cx=\"12.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><path d=\"M-6 8Q0 14 6 8\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"-19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/g><\/svg>"}, {"slug": "fener-baligi", "name": "Fener balığı", "latin": "Myctophidae", "desc": "Vücudundaki küçük ışık organlarıyla karanlık denizde parlar. Okyanustaki en kalabalık balık gruplarından biridir.", "letter": "F", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#d9f0fa\"/><g class=\"mover m-swim\">\n<path d=\"M44 0L74 -18L74 18Z\" fill=\"#4a68c0\"/><path d=\"M-12 -22L4 -40L18 -22Z\" fill=\"#4a68c0\"/>\n<ellipse cx=\"0\" cy=\"0\" rx=\"50\" ry=\"27\" fill=\"#5b7fd6\"/>\n<circle cx=\"-28\" cy=\"15\" r=\"4.5\" fill=\"#ffe66d\"/><circle cx=\"-12\" cy=\"17\" r=\"4.5\" fill=\"#ffe66d\"/>\n<circle cx=\"4\" cy=\"17\" r=\"4.5\" fill=\"#ffe66d\"/><circle cx=\"20\" cy=\"15\" r=\"4.5\" fill=\"#ffe66d\"/>\n<g transform=\"translate(-22,-4) scale(.85)\"><circle cx=\"-11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"-9.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><circle cx=\"12.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><path d=\"M-6 8Q0 14 6 8\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"-19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/g><\/svg>"}, {"slug": "fici-gozlu-balik", "name": "Fıçı gözlü balık", "latin": "Macropinna microstoma", "desc": "Başı saydamdır. Yeşil, tüp biçimli gözleri bu saydam başın içinde dönebilir.", "letter": "F", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#e3f5e6\"/><g class=\"mover m-swim\">\n<path d=\"M42 12L72 -4L72 28Z\" fill=\"#8fb8c9\"/><ellipse cx=\"8\" cy=\"14\" rx=\"44\" ry=\"24\" fill=\"#8fb8c9\"/>\n<circle cx=\"-18\" cy=\"-6\" r=\"30\" fill=\"#fff\" opacity=\".6\" stroke=\"#fff\" stroke-width=\"2\"/>\n<ellipse cx=\"-28\" cy=\"-10\" rx=\"8\" ry=\"11\" fill=\"#5ed17a\"/><ellipse cx=\"-8\" cy=\"-10\" rx=\"8\" ry=\"11\" fill=\"#5ed17a\"/>\n<circle cx=\"-28\" cy=\"-12\" r=\"3.5\" fill=\"#222\"/><circle cx=\"-8\" cy=\"-12\" r=\"3.5\" fill=\"#222\"/>\n<path d=\"M-26 12Q-18 19 -10 12\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n<circle cx=\"-38\" cy=\"8\" r=\"4\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"2\" cy=\"8\" r=\"4\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/svg>"}, {"slug": "firfirli-kopekbaligi", "name": "Fırfırlı köpekbalığı", "latin": "Chlamydoselachus anguineus", "desc": "Yılanbalığına benzeyen uzun bir derin deniz köpekbalığıdır. Çok eski zamanlardan beri az değiştiği için \"yaşayan fosil\" denir.", "letter": "F", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#fdeee0\"/><g class=\"mover m-wiggle\">\n<path d=\"M-50 22Q-20 -26 14 6T62 -6\" fill=\"none\" stroke=\"#b9906c\" stroke-width=\"22\" stroke-linecap=\"round\"/>\n<path d=\"M58 -6L78 -20L76 8Z\" fill=\"#b9906c\"/><circle cx=\"-50\" cy=\"22\" r=\"19\" fill=\"#b9906c\"/>\n<path d=\"M-36 14Q-32 22 -36 30M-28 10Q-24 18 -28 26\" stroke=\"#8b6a4c\" stroke-width=\"2\" fill=\"none\" stroke-linecap=\"round\"/>\n<g transform=\"translate(-52,20) scale(.65)\"><circle cx=\"-11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"-9.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><circle cx=\"12.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><path d=\"M-6 8Q0 14 6 8\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"-19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/g><\/svg>"}, {"slug": "hali-kopekbaligi", "name": "Halı köpekbalığı", "latin": "Orectolobidae", "desc": "Desenli, yassı vücuduyla deniz tabanında saklanır. Ağzının çevresinde sakal gibi çıkıntılar vardır.", "letter": "H", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#fdeee0\"/><g class=\"mover m-swim\">\n<path d=\"M52 12L80 -4L80 28Z\" fill=\"#d6b37a\"/><ellipse cx=\"0\" cy=\"12\" rx=\"62\" ry=\"26\" fill=\"#d6b37a\"/>\n<ellipse cx=\"-12\" cy=\"2\" rx=\"11\" ry=\"6\" fill=\"#a9824a\"/><ellipse cx=\"14\" cy=\"6\" rx=\"11\" ry=\"6\" fill=\"#a9824a\"/>\n<ellipse cx=\"36\" cy=\"14\" rx=\"9\" ry=\"5\" fill=\"#a9824a\"/>\n<circle cx=\"-62\" cy=\"22\" r=\"5\" fill=\"#c49b5f\"/><circle cx=\"-56\" cy=\"32\" r=\"5\" fill=\"#c49b5f\"/><circle cx=\"-62\" cy=\"8\" r=\"5\" fill=\"#c49b5f\"/>\n<g transform=\"translate(-30,10) scale(.8)\"><circle cx=\"-11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"-9.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><circle cx=\"12.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><path d=\"M-6 8Q0 14 6 8\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"-19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/g><\/svg>"}, {"slug": "kirmizi-dudakli-yarasa-baligi", "name": "Kırmızı dudaklı yarasa balığı", "latin": "Ogcocephalus darwini", "desc": "Parlak kırmızı dudakları vardır. İyi yüzemez, yüzgeçleriyle deniz tabanında yürür.", "letter": "K", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#d9f0fa\"/><g class=\"mover m-hop\">\n<path d=\"M44 20L72 6L72 36Z\" fill=\"#cdbfae\"/><ellipse cx=\"-44\" cy=\"34\" rx=\"12\" ry=\"7\" fill=\"#cdbfae\"/>\n<ellipse cx=\"44\" cy=\"40\" rx=\"12\" ry=\"7\" fill=\"#cdbfae\"/><ellipse cx=\"0\" cy=\"8\" rx=\"52\" ry=\"32\" fill=\"#e9dccb\"/>\n<circle cx=\"-14\" cy=\"-6\" r=\"4.5\" fill=\"#222\"/><circle cx=\"14\" cy=\"-6\" r=\"4.5\" fill=\"#222\"/>\n<circle cx=\"-12.5\" cy=\"-7.5\" r=\"1.5\" fill=\"#fff\"/><circle cx=\"15.5\" cy=\"-7.5\" r=\"1.5\" fill=\"#fff\"/>\n<ellipse cx=\"0\" cy=\"18\" rx=\"18\" ry=\"10\" fill=\"#ff4d6d\"/><ellipse cx=\"-5\" cy=\"15\" rx=\"5\" ry=\"2.5\" fill=\"#ff9aa9\"/>\n<circle cx=\"-28\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"28\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/svg>"}, {"slug": "kristal-denizanasi", "name": "Kristal denizanası", "latin": "Aequorea victoria", "desc": "Saydam ve ışıltılı bir denizanasıdır. Bilim insanları bu hayvandan yeşil floresan proteini (GFP) keşfetmiştir.", "letter": "K", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#ece6fb\"/><g class=\"mover m-bob\">\n<path d=\"M-26 8Q-30 40 -22 54M-9 10Q-8 44 -14 58M9 10Q10 44 4 58M26 8Q30 40 22 54\" fill=\"none\" stroke=\"#b7a4f5\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n<path d=\"M-46 10Q-46 -46 0 -46Q46 -46 46 10Z\" fill=\"#d6c8ff\"/>\n<ellipse cx=\"-20\" cy=\"-30\" rx=\"10\" ry=\"5\" fill=\"#fff\" opacity=\".7\" transform=\"rotate(-25 -20 -30)\"/>\n<circle cx=\"-34\" cy=\"8\" r=\"3.5\" fill=\"#7cffb2\"/><circle cx=\"-17\" cy=\"8\" r=\"3.5\" fill=\"#7cffb2\"/><circle cx=\"0\" cy=\"8\" r=\"3.5\" fill=\"#7cffb2\"/>\n<circle cx=\"17\" cy=\"8\" r=\"3.5\" fill=\"#7cffb2\"/><circle cx=\"34\" cy=\"8\" r=\"3.5\" fill=\"#7cffb2\"/>\n<g transform=\"translate(0,-14) scale(.85)\"><circle cx=\"-11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"-9.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><circle cx=\"12.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><path d=\"M-6 8Q0 14 6 8\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"-19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/g><\/svg>"}, {"slug": "ksenofiyofor", "name": "Ksenofiyofor", "latin": "Xenophyophorea", "desc": "Tek hücreli olduğu halde birkaç santimetreye kadar büyüyebilir. Derin deniz tabanında yaşar.", "letter": "K", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#d9f0fa\"/><g class=\"mover m-pulse\">\n<circle cx=\"-24\" cy=\"4\" r=\"26\" fill=\"#e8c9a0\"/><circle cx=\"12\" cy=\"-10\" r=\"28\" fill=\"#e8c9a0\"/>\n<circle cx=\"34\" cy=\"12\" r=\"22\" fill=\"#e8c9a0\"/><circle cx=\"2\" cy=\"22\" r=\"24\" fill=\"#e8c9a0\"/>\n<circle cx=\"-34\" cy=\"-6\" r=\"2.5\" fill=\"#c9a375\"/><circle cx=\"26\" cy=\"-24\" r=\"2.5\" fill=\"#c9a375\"/>\n<circle cx=\"44\" cy=\"6\" r=\"2.5\" fill=\"#c9a375\"/><circle cx=\"-12\" cy=\"36\" r=\"2.5\" fill=\"#c9a375\"/>\n<g transform=\"translate(3,6) scale(1)\"><circle cx=\"-11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"-9.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><circle cx=\"12.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><path d=\"M-6 8Q0 14 6 8\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"-19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/g><\/svg>"}, {"slug": "kurabiye-kesen-kopekbaligi", "name": "Kurabiye kesen köpekbalığı", "latin": "Isistius brasiliensis", "desc": "Küçük bir köpekbalığıdır. Büyük hayvanların üzerinde kurabiye kalıbıyla kesilmiş gibi yuvarlak ısırık izleri bırakır.", "letter": "K", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#e3f5e6\"/><g class=\"mover m-swim\">\n<circle cx=\"40\" cy=\"-42\" r=\"15\" fill=\"#e7b76b\"/><circle cx=\"35\" cy=\"-46\" r=\"2.5\" fill=\"#6d4c41\"/>\n<circle cx=\"46\" cy=\"-38\" r=\"2.5\" fill=\"#6d4c41\"/><circle cx=\"34\" cy=\"-36\" r=\"2.5\" fill=\"#6d4c41\"/>\n<path d=\"M48 14L78 -4L78 32Z\" fill=\"#8d6e63\"/><path d=\"M-12 -4L-2 -26L12 -4Z\" fill=\"#7a5f55\"/>\n<ellipse cx=\"0\" cy=\"12\" rx=\"52\" ry=\"20\" fill=\"#8d6e63\"/><ellipse cx=\"-4\" cy=\"20\" rx=\"40\" ry=\"8\" fill=\"#c9b3a8\"/>\n<g transform=\"translate(-26,10) scale(.8)\"><circle cx=\"-11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"-9.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><circle cx=\"12.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><path d=\"M-6 8Q0 14 6 8\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"-19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/g><\/svg>"}, {"slug": "kurek-baligi", "name": "Kürek balığı", "latin": "Regalecus glesne", "desc": "8 metreye kadar uzayabilir. Bilinen en uzun kemikli balıktır.", "letter": "K", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#fdeee0\"/><g class=\"mover m-wiggle\">\n<path d=\"M-66 18Q-42 -34 -2 4T68 -14\" fill=\"none\" stroke=\"#c9d6df\" stroke-width=\"18\" stroke-linecap=\"round\"/>\n<path d=\"M-62 4Q-40 -50 -2 -12T64 -30\" fill=\"none\" stroke=\"#ff5d73\" stroke-width=\"3\" stroke-dasharray=\"2 7\" stroke-linecap=\"round\"/>\n<circle cx=\"-66\" cy=\"18\" r=\"19\" fill=\"#c9d6df\"/>\n<path d=\"M-72 0Q-84 -20 -68 -24\" fill=\"none\" stroke=\"#ff5d73\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n<g transform=\"translate(-66,18) scale(.7)\"><circle cx=\"-11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"-9.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><circle cx=\"12.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><path d=\"M-6 8Q0 14 6 8\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"-19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/g><\/svg>"}, {"slug": "mavi-ejderha", "name": "Mavi ejderha", "latin": "Glaucus atlanticus", "desc": "Su yüzeyinde ters yüzer. Zehirli denizanalarıyla beslenir.", "letter": "M", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#ece6fb\"/><g class=\"mover m-bob\">\n<path d=\"M-44 4L-70 -20M-44 4L-72 4M-44 14L-66 34M44 4L70 -20M44 4L72 4M44 14L66 34\" fill=\"none\" stroke=\"#4da3ff\" stroke-width=\"11\" stroke-linecap=\"round\"/>\n<ellipse cx=\"0\" cy=\"4\" rx=\"46\" ry=\"26\" fill=\"#2f6fe0\"/><ellipse cx=\"0\" cy=\"28\" rx=\"38\" ry=\"4\" fill=\"#bfe0ff\"/>\n<g transform=\"translate(0,2) scale(1)\"><circle cx=\"-11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"-9.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><circle cx=\"12.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><path d=\"M-6 8Q0 14 6 8\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"-19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/g><\/svg>"}, {"slug": "mucevher-kalamari", "name": "Mücevher kalamarı", "latin": "Histioteuthis", "desc": "Derin sularda yaşar. İki gözünün boyutu birbirinden farklıdır.", "letter": "M", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#d9f0fa\"/><g class=\"mover m-bob\">\n<path d=\"M-16 16Q-20 36 -26 52M-5 18Q-6 40 -8 56M5 18Q6 40 8 56M16 16Q20 36 26 52\" fill=\"none\" stroke=\"#ff7a59\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n<path d=\"M-16 -44L0 -64L16 -44Z\" fill=\"#ff9a7a\"/><ellipse cx=\"0\" cy=\"-12\" rx=\"28\" ry=\"34\" fill=\"#ff7a59\"/>\n<circle cx=\"-6\" cy=\"-36\" r=\"2.5\" fill=\"#ffd166\"/><circle cx=\"8\" cy=\"-30\" r=\"2.5\" fill=\"#ffd166\"/><circle cx=\"-12\" cy=\"-24\" r=\"2.5\" fill=\"#ffd166\"/>\n<circle cx=\"-11\" cy=\"-6\" r=\"10\" fill=\"#fff\"/><circle cx=\"-10\" cy=\"-5\" r=\"5\" fill=\"#222\"/>\n<circle cx=\"12\" cy=\"-6\" r=\"6\" fill=\"#fff\"/><circle cx=\"12.5\" cy=\"-5.5\" r=\"3\" fill=\"#222\"/>\n<path d=\"M-6 12Q1 19 8 12\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n<circle cx=\"-20\" cy=\"10\" r=\"4\" fill=\"#ffb3a0\" opacity=\".8\"/><circle cx=\"22\" cy=\"10\" r=\"4\" fill=\"#ffb3a0\" opacity=\".8\"/><\/g><\/svg>"}, {"slug": "ok-kurdu", "name": "Ok kurdu", "latin": "Chaetognatha", "desc": "Planktonlar arasında yaşayan, ok biçimli küçük bir avcıdır.", "letter": "O", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#e3f5e6\"/><g class=\"mover m-swim\">\n<path d=\"M-68 0L-84 -16L-84 16Z\" fill=\"#cfe27a\"/><path d=\"M-40 -8L-50 -26L-24 -12Z\" fill=\"#cfe27a\"/>\n<path d=\"M-40 8L-50 26L-24 12Z\" fill=\"#cfe27a\"/>\n<path d=\"M-68 0L46 -17Q64 0 46 17Z\" fill=\"#e6f2a8\" stroke=\"#cfe27a\" stroke-width=\"2\"/>\n<g transform=\"translate(18,-1) scale(.85)\"><circle cx=\"-11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"-9.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><circle cx=\"12.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><path d=\"M-6 8Q0 14 6 8\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"-19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/g><\/svg>"}, {"slug": "okyanus-midyesi", "name": "Okyanus midyesi", "latin": "Arctica islandica", "desc": "Bilinen en uzun yaşayan hayvanlardan biridir. 500 yıldan fazla yaşayan bireyler bulunmuştur.", "letter": "O", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#fdeee0\"/><g class=\"mover m-pulse\">\n<ellipse cx=\"0\" cy=\"6\" rx=\"52\" ry=\"42\" fill=\"#c9a77c\"/>\n<path d=\"M-40 -14Q0 -44 40 -14M-46 6Q0 -30 46 6M-46 24Q0 -14 46 24\" fill=\"none\" stroke=\"#a9845a\" stroke-width=\"2.5\"/>\n<rect x=\"-14\" y=\"-40\" width=\"28\" height=\"8\" rx=\"4\" fill=\"#a9845a\"/>\n<path d=\"M-24 -8L-8 -12M8 -12L24 -8\" stroke=\"#fff\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n<g transform=\"translate(0,6) scale(1)\"><circle cx=\"-11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"-9.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><circle cx=\"12.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><path d=\"M-6 8Q0 14 6 8\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"-19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/g><\/svg>"}, {"slug": "pelikan-yilanbaligi", "name": "Pelikan yılanbalığı", "latin": "Eurypharynx pelecanoides", "desc": "Çok büyük bir ağzı vardır. Kendinden büyük avları bile yutabilir.", "letter": "P", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#ece6fb\"/><g class=\"mover m-wiggle\">\n<path d=\"M-6 6Q30 -26 52 14T88 4\" fill=\"none\" stroke=\"#6d5bb5\" stroke-width=\"8\" stroke-linecap=\"round\" transform=\"translate(-14,0) scale(.85)\"/>\n<circle cx=\"62\" cy=\"-6\" r=\"6\" fill=\"#ffe66d\"/><circle cx=\"-32\" cy=\"0\" r=\"32\" fill=\"#6d5bb5\"/>\n<circle cx=\"-42\" cy=\"-16\" r=\"4.5\" fill=\"#fff\"/><circle cx=\"-24\" cy=\"-16\" r=\"4.5\" fill=\"#fff\"/>\n<circle cx=\"-41\" cy=\"-16\" r=\"2.2\" fill=\"#222\"/><circle cx=\"-23\" cy=\"-16\" r=\"2.2\" fill=\"#222\"/>\n<ellipse cx=\"-34\" cy=\"10\" rx=\"22\" ry=\"14\" fill=\"#ff8fa3\"/><path d=\"M-46 14Q-34 26 -22 14\" fill=\"#e86a85\"/><\/g><\/svg>"}, {"slug": "pirozom", "name": "Pirozom", "latin": "Pyrosoma", "desc": "Yüzlerce küçük canlının bir araya gelmesiyle oluşan tüp biçimli bir kolonidir. Karanlıkta ışık saçar.", "letter": "P", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#d9f0fa\"/><g class=\"mover m-bob\">\n<circle cx=\"-62\" cy=\"-42\" r=\"4\" fill=\"#ffe66d\"/><circle cx=\"58\" cy=\"-46\" r=\"4\" fill=\"#ffe66d\"/>\n<circle cx=\"64\" cy=\"42\" r=\"4\" fill=\"#ffe66d\"/><circle cx=\"-66\" cy=\"40\" r=\"4\" fill=\"#ffe66d\"/>\n<rect x=\"-56\" y=\"-24\" width=\"112\" height=\"48\" rx=\"24\" fill=\"#ffc4a8\" stroke=\"#ff9f7a\" stroke-width=\"2\"/>\n<circle cx=\"14\" cy=\"-12\" r=\"3\" fill=\"#fff\" opacity=\".7\"/><circle cx=\"30\" cy=\"8\" r=\"3\" fill=\"#fff\" opacity=\".7\"/>\n<circle cx=\"42\" cy=\"-8\" r=\"3\" fill=\"#fff\" opacity=\".7\"/><circle cx=\"2\" cy=\"14\" r=\"3\" fill=\"#fff\" opacity=\".7\"/>\n<ellipse cx=\"52\" cy=\"0\" rx=\"5\" ry=\"10\" fill=\"#ff9f7a\"/>\n<g transform=\"translate(-20,0) scale(.85)\"><circle cx=\"-11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"-9.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><circle cx=\"12.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><path d=\"M-6 8Q0 14 6 8\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"-19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/g><\/svg>"}, {"slug": "taklitci-ahtapot", "name": "Taklitçi ahtapot", "latin": "Thaumoctopus mimicus", "desc": "Vücudunun şeklini ve rengini değiştirerek aslan balığı gibi başka hayvanlara benzer.", "letter": "T", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#e3f5e6\"/><g class=\"mover m-wiggle\">\n<path d=\"M-15 8Q-45 30 -50 54M-5 10Q-15 40 -25 58M5 10Q15 40 25 58M15 8Q45 30 50 54\" fill=\"none\" stroke=\"#e8d4b0\" stroke-width=\"9\" stroke-linecap=\"round\"/>\n<path d=\"M-15 8Q-45 30 -50 54M-5 10Q-15 40 -25 58M5 10Q15 40 25 58M15 8Q45 30 50 54\" fill=\"none\" stroke=\"#6d4c41\" stroke-width=\"9\" stroke-dasharray=\"4 8\"/>\n<circle cx=\"0\" cy=\"-16\" r=\"30\" fill=\"#e8d4b0\"/>\n<path d=\"M-24 -32Q0 -44 24 -32M-30 -16Q-26 -26 -20 -30\" fill=\"none\" stroke=\"#6d4c41\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n<g transform=\"translate(0,-12) scale(1)\"><circle cx=\"-11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"-9.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><circle cx=\"12.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><path d=\"M-6 8Q0 14 6 8\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"-19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/g><\/svg>"}, {"slug": "uc-ayakli-balik", "name": "Üç ayaklı balık", "latin": "Bathypterois", "desc": "Uzun yüzgeç uçlarının üzerinde deniz tabanında durur ve yiyeceğin gelmesini bekler.", "letter": "Ü", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#d9f0fa\"/><g class=\"mover m-hop\">\n<ellipse cx=\"0\" cy=\"62\" rx=\"72\" ry=\"10\" fill=\"#f2dca8\"/>\n<path d=\"M-18 -8L-46 58M18 -8L46 58M0 -4L0 58\" stroke=\"#7f95aa\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n<path d=\"M-12 -36Q10 -70 42 -50\" fill=\"none\" stroke=\"#7f95aa\" stroke-width=\"4\" stroke-linecap=\"round\"/>\n<path d=\"M30 -18L58 -30L58 -6Z\" fill=\"#7f95aa\"/><ellipse cx=\"0\" cy=\"-18\" rx=\"40\" ry=\"22\" fill=\"#a7b8c9\"/>\n<g transform=\"translate(-12,-20) scale(.8)\"><circle cx=\"-11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"11\" r=\"4.5\" fill=\"#222\"/><circle cx=\"-9.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><circle cx=\"12.5\" cy=\"-1.5\" r=\"1.5\" fill=\"#fff\"/><path d=\"M-6 8Q0 14 6 8\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/><circle cx=\"-19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"19\" cy=\"8\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/g><\/svg>"}, {"slug": "vampir-kalamar", "name": "Vampir kalamar", "latin": "Vampyroteuthis infernalis", "desc": "Adına rağmen ne kalamardır ne de ahtapot. Oksijenin az olduğu derinliklerde yaşar.", "letter": "V", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#ece6fb\"/><g class=\"mover m-bob\">\n<path d=\"M-36 8Q-32 52 0 56Q32 52 36 8Z\" fill=\"#6a2f62\"/>\n<path d=\"M-26 40Q-22 56 -14 52M-8 54Q0 60 8 54M14 52Q22 56 26 40\" fill=\"none\" stroke=\"#8e4585\" stroke-width=\"3\" stroke-linecap=\"round\"/>\n<ellipse cx=\"-30\" cy=\"-30\" rx=\"10\" ry=\"13\" fill=\"#8e4585\"/><ellipse cx=\"30\" cy=\"-30\" rx=\"10\" ry=\"13\" fill=\"#8e4585\"/>\n<circle cx=\"0\" cy=\"-8\" r=\"34\" fill=\"#8e4585\"/>\n<circle cx=\"-14\" cy=\"-12\" r=\"10\" fill=\"#8fd3ff\"/><circle cx=\"14\" cy=\"-12\" r=\"10\" fill=\"#8fd3ff\"/>\n<circle cx=\"-13\" cy=\"-11\" r=\"5\" fill=\"#222\"/><circle cx=\"15\" cy=\"-11\" r=\"5\" fill=\"#222\"/>\n<circle cx=\"-11\" cy=\"-13\" r=\"1.8\" fill=\"#fff\"/><circle cx=\"17\" cy=\"-13\" r=\"1.8\" fill=\"#fff\"/>\n<path d=\"M-7 8Q0 15 7 8\" fill=\"none\" stroke=\"#fff\" stroke-width=\"2\" stroke-linecap=\"round\"/><\/g><\/svg>"}, {"slug": "yeti-yengeci", "name": "Yeti yengeci", "latin": "Kiwa", "desc": "Tüylü pençeleri vardır. Denizin dibindeki sıcak su bacalarının yakınında yaşar.", "letter": "Y", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#d9f0fa\"/><g class=\"mover m-hop\">\n<path d=\"M-30 20L-52 40M-20 26L-34 48M30 20L52 40M20 26L34 48\" stroke=\"#e9e2d3\" stroke-width=\"6\" stroke-linecap=\"round\"/>\n<path d=\"M-32 -2L-52 -14M32 -2L52 -14\" stroke=\"#f5f1ea\" stroke-width=\"8\" stroke-linecap=\"round\"/>\n<circle cx=\"-56\" cy=\"-18\" r=\"16\" fill=\"#f5f1ea\" stroke=\"#e9e2d3\" stroke-width=\"2\"/>\n<circle cx=\"56\" cy=\"-18\" r=\"16\" fill=\"#f5f1ea\" stroke=\"#e9e2d3\" stroke-width=\"2\"/>\n<path d=\"M-66 -26L-72 -30M-64 -18L-72 -18M-66 -10L-72 -6M66 -26L72 -30M64 -18L72 -18M66 -10L72 -6\" stroke=\"#cfc7b6\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n<path d=\"M-10 -14L-10 -28M10 -14L10 -28\" stroke=\"#e9e2d3\" stroke-width=\"3\"/>\n<circle cx=\"-10\" cy=\"-30\" r=\"6\" fill=\"#fff\" stroke=\"#222\" stroke-width=\"1.5\"/><circle cx=\"10\" cy=\"-30\" r=\"6\" fill=\"#fff\" stroke=\"#222\" stroke-width=\"1.5\"/>\n<circle cx=\"-10\" cy=\"-30\" r=\"3\" fill=\"#222\"/><circle cx=\"10\" cy=\"-30\" r=\"3\" fill=\"#222\"/>\n<ellipse cx=\"0\" cy=\"8\" rx=\"38\" ry=\"28\" fill=\"#f5f1ea\" stroke=\"#e9e2d3\" stroke-width=\"2\"/>\n<path d=\"M-7 12Q0 19 7 12\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n<circle cx=\"-20\" cy=\"14\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><circle cx=\"20\" cy=\"14\" r=\"4.5\" fill=\"#ff8fa3\" opacity=\".6\"/><\/g><\/svg>"}, {"slug": "zombi-solucan", "name": "Zombi solucan", "latin": "Osedax", "desc": "Balina kemiklerinin üzerinde yaşar ve kemikleri sindirerek beslenir.", "letter": "Z", "svg": "<svg viewBox=\"-100 -80 200 160\" aria-hidden=\"true\" focusable=\"false\"><rect x=\"-100\" y=\"-80\" width=\"200\" height=\"160\" rx=\"16\" fill=\"#e3f5e6\"/><g class=\"mover m-wiggle\">\n<rect x=\"-52\" y=\"38\" width=\"104\" height=\"14\" rx=\"7\" fill=\"#fff\"/>\n<circle cx=\"-52\" cy=\"40\" r=\"9\" fill=\"#fff\"/><circle cx=\"-52\" cy=\"52\" r=\"9\" fill=\"#fff\"/>\n<circle cx=\"52\" cy=\"40\" r=\"9\" fill=\"#fff\"/><circle cx=\"52\" cy=\"52\" r=\"9\" fill=\"#fff\"/>\n<path d=\"M0 42L0 -4\" stroke=\"#ffb3c1\" stroke-width=\"24\" stroke-linecap=\"round\"/>\n<ellipse cx=\"-30\" cy=\"-26\" rx=\"8\" ry=\"20\" fill=\"#ff6b81\" transform=\"rotate(-50 0 -6)\"/>\n<ellipse cx=\"-16\" cy=\"-32\" rx=\"8\" ry=\"20\" fill=\"#ff6b81\" transform=\"rotate(-25 0 -6)\"/>\n<ellipse cx=\"0\" cy=\"-34\" rx=\"8\" ry=\"20\" fill=\"#ff6b81\"/>\n<ellipse cx=\"16\" cy=\"-32\" rx=\"8\" ry=\"20\" fill=\"#ff6b81\" transform=\"rotate(25 0 -6)\"/>\n<ellipse cx=\"30\" cy=\"-26\" rx=\"8\" ry=\"20\" fill=\"#ff6b81\" transform=\"rotate(50 0 -6)\"/>\n<circle cx=\"-5\" cy=\"12\" r=\"3.5\" fill=\"#222\"/><circle cx=\"5\" cy=\"12\" r=\"3.5\" fill=\"#222\"/>\n<path d=\"M-4 20Q0 25 4 20\" fill=\"none\" stroke=\"#222\" stroke-width=\"2\" stroke-linecap=\"round\"/>\n<circle cx=\"-10\" cy=\"20\" r=\"3\" fill=\"#ff8fa3\" opacity=\".7\"/><circle cx=\"10\" cy=\"20\" r=\"3\" fill=\"#ff8fa3\" opacity=\".7\"/><\/g><\/svg>"}];
+const $ = (s, r) => (r || document).querySelector(s);
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const ICON = {
+  speaker: '<svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 10v4h4l5 4V6L7 10z"/><path fill="none" d="M15.5 8.5a5 5 0 010 7M18.5 5.5a9 9 0 010 13"/></svg>',
+  stop: '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>',
+  star: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1z"/></svg>'
+};
+const LISTEN = ICON.speaker + 'Dinle';
+const STOP = ICON.stop + 'Durdur';
+
+/* ---------- Ses ---------- */
+const hasTTS = 'speechSynthesis' in window;
+if (!hasTTS) document.documentElement.classList.add('no-tts');
+let voice = null, speakingBtn = null;
+function pickVoice() {
+  if (!hasTTS) return;
+  const vs = speechSynthesis.getVoices();
+  voice = vs.find(v => /^tr/i.test(v.lang)) || null;
+  const missing = vs.length > 0 && !voice;
+  document.querySelectorAll('.vnote').forEach(n => { n.hidden = !missing; });
+}
+if (hasTTS) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
+function resetSpeakBtn() {
+  if (speakingBtn) { speakingBtn.innerHTML = LISTEN; speakingBtn = null; }
+}
+function stopSpeak() {
+  if (hasTTS) speechSynthesis.cancel();
+  resetSpeakBtn();
+}
+function speak(text, btn) {
+  if (!hasTTS) return;
+  if (speakingBtn === btn) { stopSpeak(); return; }
+  stopSpeak();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'tr-TR';
+  if (voice) u.voice = voice;
+  u.rate = 0.9; u.pitch = 1.1;
+  u.onend = u.onerror = () => { if (speakingBtn === btn) resetSpeakBtn(); };
+  speakingBtn = btn;
+  btn.innerHTML = STOP;
+  speechSynthesis.speak(u);
+}
+
+/* ---------- Keşfet ---------- */
+const grid = $('#grid');
+C.forEach((c, i) => {
+  const b = document.createElement('button');
+  b.className = 'card';
+  b.dataset.i = i;
+  b.setAttribute('aria-label', c.name);
+  b.style.setProperty('--d', (-(i % 7) * 0.45) + 's');
+  b.innerHTML = '<span class="art">' + c.svg + '<span class="badge" aria-hidden="true">' + c.letter + '</span></span><span class="nm">' + c.name + '</span>';
+  b.addEventListener('click', () => openDetail(i));
+  grid.appendChild(b);
+});
+
+const letters = $('#letters');
+[...new Set(C.map(c => c.letter))].forEach(L => {
+  const b = document.createElement('button');
+  b.className = 'chip';
+  b.textContent = L;
+  b.setAttribute('aria-label', L + ' harfi');
+  b.addEventListener('click', () => {
+    const card = grid.children[C.findIndex(c => c.letter === L)];
+    card.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'center' });
+    card.classList.add('flash');
+    setTimeout(() => card.classList.remove('flash'), 1400);
+  });
+  letters.appendChild(b);
+});
+
+/* ---------- Ayrıntı penceresi ---------- */
+const dlg = $('#detail'), dArt = $('#d-art'), dListen = $('#d-listen');
+let cur = -1;
+dListen.innerHTML = LISTEN;
+function openDetail(i, fromHash) {
+  const c = C[i];
+  cur = i;
+  stopSpeak();
+  dArt.innerHTML = c.svg;
+  dArt.setAttribute('aria-label', c.name + ' çizimi');
+  $('#d-name').textContent = c.name;
+  $('#d-latin').textContent = c.latin;
+  $('#d-desc').textContent = c.desc;
+  if (!fromHash) { try { if (location.hash !== '#' + c.slug) location.hash = c.slug; } catch (e) {} }
+  if (!dlg.open) { if (dlg.showModal) dlg.showModal(); else dlg.setAttribute('open', ''); }
+}
+function closeDetail() { if (dlg.open) dlg.close(); }
+dlg.addEventListener('close', () => {
+  stopSpeak();
+  try { if (C.some(c => '#' + c.slug === location.hash)) location.hash = ''; } catch (e) {}
+});
+dlg.addEventListener('click', e => { if (e.target === dlg) closeDetail(); });
+$('#d-close').addEventListener('click', closeDetail);
+$('#d-prev').addEventListener('click', () => openDetail((cur + C.length - 1) % C.length));
+$('#d-next').addEventListener('click', () => openDetail((cur + 1) % C.length));
+dListen.addEventListener('click', () => { const c = C[cur]; speak(c.name + '. ' + c.desc, dListen); });
+dArt.addEventListener('click', () => {
+  const s = dArt.querySelector('svg');
+  s.classList.remove('boing'); void s.getBoundingClientRect(); s.classList.add('boing');
+});
+dArt.addEventListener('animationend', e => { if (e.target.classList && e.target.classList.contains('boing')) e.target.classList.remove('boing'); });
+
+/* ---------- Sekmeler ve adres ---------- */
+let tab = 'explore';
+function setTab(name) {
+  tab = name;
+  $('#explore').hidden = name !== 'explore';
+  $('#game').hidden = name !== 'game';
+  $('#tab-explore').setAttribute('aria-pressed', String(name === 'explore'));
+  $('#tab-game').setAttribute('aria-pressed', String(name === 'game'));
+  if (name === 'game') { if (!gameStarted) renderIntro(); } else { stopSpeak(); }
+}
+function route() {
+  let h = '';
+  try { h = decodeURIComponent(location.hash.slice(1)); } catch (e) {}
+  if (h === 'oyun') { closeDetail(); setTab('game'); return; }
+  const i = C.findIndex(c => c.slug === h);
+  if (i >= 0) { setTab('explore'); if (!dlg.open || cur !== i) openDetail(i, true); return; }
+  closeDetail();
+  setTab('explore');
+}
+$('#tab-explore').addEventListener('click', () => { setTab('explore'); try { location.hash = ''; } catch (e) {} });
+$('#tab-game').addEventListener('click', () => { setTab('game'); try { location.hash = 'oyun'; } catch (e) {} });
+window.addEventListener('hashchange', route);
+
+/* ---------- Oyun ---------- */
+const gb = $('#game-body');
+const TOTAL = 10;
+let gameStarted = false, order = [], round = 0, results = [], wrongs = 0, locked = false;
+function shuffle(a) {
+  a = a.slice();
+  for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; }
+  return a;
+}
+function starsHTML() {
+  let s = '';
+  for (let r = 0; r < TOTAL; r++) s += results[r] === true ? ICON.star.replace('<svg ', '<svg class="on" ') : ICON.star;
+  return '<span class="stars" role="img" aria-label="' + results.filter(Boolean).length + ' yıldız">' + s + '</span>';
+}
+function renderIntro() {
+  gameStarted = true;
+  gb.innerHTML = '<div class="g-intro"><h2>Bu hangi canlı?</h2><p>Bir canlının adını göreceksin. Adı oku ya da dinle, sonra doğru çizimi bul. 10 soru var. İlk denemede bulursan yıldız kazanırsın.</p><button class="btn" id="g-start">Başla</button></div>';
+}
+function startGame() {
+  order = shuffle(C.map((_, k) => k)).slice(0, TOTAL);
+  round = 0; results = [];
+  renderRound();
+}
+function renderRound() {
+  stopSpeak();
+  const idx = order[round], t = C[idx];
+  const others = shuffle(C.map((_, k) => k).filter(k => k !== idx)).slice(0, 2);
+  const opts = shuffle([idx].concat(others));
+  wrongs = 0; locked = false;
+  gb.innerHTML =
+    '<div class="g-top"><span class="g-count">Soru ' + (round + 1) + ' / ' + TOTAL + '</span>' + starsHTML() + '</div>' +
+    '<p class="g-q">Hangisi <mark>' + t.name + '</mark>?</p>' +
+    '<button class="btn ghost listen" id="g-listen">' + LISTEN + '</button>' +
+    '<p class="vnote" hidden>Bu cihazda Türkçe ses bulunamadı. Okuma sesi doğru çıkmayabilir.</p>' +
+    '<div class="opts">' + opts.map((k, n) => '<button class="opt" data-k="' + k + '" aria-label="Seçenek ' + (n + 1) + '"><span class="art">' + C[k].svg + '</span></button>').join('') + '</div>' +
+    '<div class="fb" id="fb" aria-live="polite" hidden></div>' +
+    '<div class="g-next" id="g-nextwrap"></div>';
+  pickVoice();
+}
+function choose(b) {
+  if (locked || b.disabled) return;
+  const k = +b.dataset.k, idx = order[round], t = C[idx], fb = $('#fb');
+  if (k === idx) {
+    locked = true;
+    results[round] = wrongs === 0;
+    gb.querySelectorAll('.opt').forEach(o => { o.disabled = true; });
+    b.classList.add('right');
+    fb.hidden = false; fb.className = 'fb good';
+    fb.innerHTML = '<strong>Aferin!</strong>Bu ' + t.name + '. ' + t.desc;
+    $('.stars', gb).outerHTML = starsHTML();
+    const last = round === TOTAL - 1;
+    $('#g-nextwrap').innerHTML = '<button class="btn" id="g-next">' + (last ? 'Bitir' : 'Sıradaki') + '</button>';
+    $('#g-next').focus();
+  } else {
+    wrongs++;
+    b.classList.add('wrong'); b.disabled = true;
+    fb.hidden = false; fb.className = 'fb try';
+    fb.innerHTML = '<strong>Olmadı, tekrar dene!</strong>Başka bir çizime dokun.';
+  }
+}
+function renderEnd() {
+  stopSpeak();
+  const score = results.filter(Boolean).length;
+  const msg = score >= 9 ? 'Harika! Sen bir deniz uzmanısın.' : score >= 6 ? 'Çok güzel! Denizi iyi tanıyorsun.' : 'Güzel deneme! Canlılara bir daha göz at, sonra tekrar dene.';
+  gb.innerHTML = '<div class="g-end big-stars">' + starsHTML() + '<h2>' + TOTAL + ' sorudan ' + score + ' tanesini ilk denemede buldun</h2><p>' + msg + '</p><div class="g-row"><button class="btn" id="g-again">Tekrar oyna</button><button class="btn ghost" id="g-browse">Canlılara bak</button></div></div>';
+}
+gb.addEventListener('click', e => {
+  const b = e.target.closest('button');
+  if (!b) return;
+  if (b.id === 'g-start' || b.id === 'g-again') startGame();
+  else if (b.id === 'g-listen') speak(C[order[round]].name, b);
+  else if (b.id === 'g-next') { round++; if (round < TOTAL) renderRound(); else renderEnd(); }
+  else if (b.id === 'g-browse') { setTab('explore'); try { location.hash = ''; } catch (e2) {} }
+  else if (b.classList.contains('opt')) choose(b);
+});
+
+route();
+</script>
